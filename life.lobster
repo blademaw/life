@@ -103,11 +103,11 @@ def initializeBoard(rows: int, cols: int, empty: bool = false) -> Board:
 
     return Board { cells, rows, cols }
 
-rnd_seed(30) // interesting seeds: 3, 10
+rnd_seed(30)
 let DEBUG = false
-let EMPTY = true
-let N = 10
-let M = 10
+let EMPTY = false
+let N = 50
+let M = 50
 var time_since = 0.
 let board = initializeBoard(N, M, EMPTY)
 let gameState = GameState { board }
@@ -116,7 +116,7 @@ let bg_color = if DEBUG: color_red else: color_black
 // drawing loop
 while gl_frame():
     if gl_button("escape") or gl_button("q"): return
-    gl_clear(color_grey)
+    gl_clear(bg_color)
     gl_color(color_white)
 
     // draw the board
