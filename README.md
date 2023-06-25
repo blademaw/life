@@ -16,7 +16,7 @@ lobster life.lobster
 
 ## List of known issues & wishlist
 
-* [ ] Add support for non-square boards
+* [x] Add support for non-square boards
 * [ ] Try to optimize (look into implementing Hashlife?)
 * [ ] Add UI elements with ability to:
   * [ ] Change grid size on the fly

@@ -34,9 +34,9 @@ struct Board:
     // draw the board with GL
     def drawBoard():
         let window_size = gl_window_size()
-        let unit = min(float(window_size) / xy_f { rowsize, colsize })
+        let units = float(window_size) / xy_f { rowsize, colsize }
 
-        gl_scale(unit):
+        gl_scale(units):
             for(rowsize) i: for(colsize) j:
                 gl_translate(xy_f { j, i }):
                     let cellColor = if (cells[i][j].status == alive): color_white else: color_black
@@ -65,8 +65,9 @@ struct Board:
                 if debug and cells[i][j].status == alive:
                     print("Cell {i},{j} has {neighbors} neighbors")
 
-        if debug: print("-----------------------------")
-        if debug: print("tick at {gl_time()}")
+        if debug: 
+            print("-----------------------------")
+            print("tick at {gl_time()}")
         return newcells
 
     // switch a cell status
@@ -134,6 +135,6 @@ while gl_frame():
     // handle user changing cells
     if gl_button("mouse1") == 1:
         let mpos = gl_mouse_pos(0) 
-        let norm_pos = xy_f { mpos.y, mpos.x } / min(float(gl_window_size()) / xy_f { board.rowsize, board.colsize })
+        let norm_pos = xy_f { mpos.x, mpos.y } / (float(gl_window_size()) / xy_f { board.rowsize, board.colsize })
         if DEBUG: print("Mouse clicked at {mpos}, cell {norm_pos}")
-        gameState.changeCell(int(norm_pos.x), int(norm_pos.y))
+        gameState.changeCell(int(norm_pos.y), int(norm_pos.x))
