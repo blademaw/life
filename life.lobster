@@ -154,16 +154,17 @@ class ui:
                     DEBUG = false
 
 
-// constants
-
+// init params for instance
 var time_since = 0.
 let board = initializeBoard(N, M, EMPTY)
 let gameState = GameState { board }
 let bg_color = if DEBUG: color_red else: color_black
 
+// starting UI
 let uier = ui {}
 uier.init()
 
+// graphics loop
 while gl_frame():
     if gl_button("escape") or gl_button("q"): return
     if DEBUG: gl_clear(color_red) else: gl_clear(bg_color)

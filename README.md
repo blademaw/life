@@ -18,6 +18,7 @@ lobster life.lobster
 
 * [x] Add support for non-square boards
 * [ ] Try to optimize (look into implementing Hashlife?)
+* [ ] Change map into torus (add flag?)
 * [ ] Add UI elements with ability to:
   * [x] Change grid size on the fly
   * [ ] Add common elements (shape repertoire -- gliders, etc.)
