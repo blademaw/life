@@ -6,8 +6,6 @@ import imgui
 import std
 import vec
 
-var seed = 1
-rnd_seed(seed)
 
 enum CellStatus:
     dead  = 0
@@ -97,10 +95,14 @@ let WINDOW_HEIGHT = 500
 let WINDOW_WIDTH  = WINDOW_HEIGHT
 fatal(gl_window("Game of Life", WINDOW_WIDTH, WINDOW_HEIGHT))
 
-var DEBUG = false
-var EMPTY = false
-var N = 50
-var M = 50
+// constants, seed
+var seed = 1
+rnd_seed(seed)
+
+var DEBUG = false // FIXME: refactor to be lowercase
+let EMPTY = false
+let N = 50
+let M = 50
     
 // initialize a random board
 def initializeBoard(rows: int, cols: int, empty: bool = false) -> Board:
@@ -125,11 +127,11 @@ class ui:
                 im_separator()
 
                 // change rows
-                var i = string_to_int(im_input_text("Rows", "{board.rowsize}"))
+                let i = string_to_int(im_input_text("Rows", "{board.rowsize}"))
                 if i != board.rowsize:
                     board = initializeBoard(i, board.colsize)
                 // change columns
-                var j = string_to_int(im_input_text("Columns", "{board.colsize}"))
+                let j = string_to_int(im_input_text("Columns", "{board.colsize}"))
                 if j != board.colsize:
                     board = initializeBoard(board.rowsize, j)
                 
