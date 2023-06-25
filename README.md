@@ -19,9 +19,9 @@ lobster life.lobster
 * [x] Add support for non-square boards
 * [ ] Try to optimize (look into implementing Hashlife?)
 * [ ] Add UI elements with ability to:
-  * [ ] Change grid size on the fly
+  * [x] Change grid size on the fly
   * [ ] Add common elements (shape repertoire -- gliders, etc.)
-  * [ ] Clear/randomize grid
-  * [ ] Change some flags (e.g. debugging)
+  * [x] Clear/randomize grid
+  * [x] Change some flags (e.g. debugging)
 
 

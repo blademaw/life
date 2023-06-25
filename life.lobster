@@ -1,8 +1,13 @@
 // Testing language functionality with GOL
 
-import gl
 import color
+import gl
+import imgui
 import std
+import vec
+
+var seed = 1
+rnd_seed(seed)
 
 enum CellStatus:
     dead  = 0
@@ -34,8 +39,7 @@ struct Board:
     // draw the board with GL
     def drawBoard():
         let window_size = gl_window_size()
-        let units = float(window_size) / xy_f { rowsize, colsize }
-
+        let units = float(window_size) / xy_f { colsize, rowsize }
         gl_scale(units):
             for(rowsize) i: for(colsize) j:
                 gl_translate(xy_f { j, i }):
@@ -93,35 +97,81 @@ let WINDOW_HEIGHT = 500
 let WINDOW_WIDTH  = WINDOW_HEIGHT
 fatal(gl_window("Game of Life", WINDOW_WIDTH, WINDOW_HEIGHT))
 
+var DEBUG = false
+var EMPTY = false
+var N = 50
+var M = 50
+    
 // initialize a random board
 def initializeBoard(rows: int, cols: int, empty: bool = false) -> Board:
-    var cells = []::[Cell]
-    for (rows):
-        var temp = []::Cell
-        for (cols):
-            temp = temp.append([Cell { CellStatus(if empty: 0 else: rnd(2)) }])
-        cells = cells.append([temp])
+    return Board {
+        map(rows): map(cols): Cell { CellStatus(if empty: 0 else: rnd(2)) },
+        rows,
+        cols
+    }
 
-    return Board { cells, rows, cols }
+// UI for controls
+class ui:
+    def init():
+        im_init(true)
+        let im_fontsize = 32.0
+        // check(im_add_font("data/fonts/Droid_Sans/DroidSans.ttf", im_fontsize), "cannot load imgui font")
+        check(im_add_font("data/fonts/Inconsolata/Inconsolata-Bold.ttf", im_fontsize), "cannot load imgui font")
 
-rnd_seed(30)
-let DEBUG = false
-let EMPTY = false
-let N = 50
-let M = 50
+    def resume(gameState :: GameState):
+        im_frame():
+            im_window("ctl", im_window_always_autoresize):
+                im_show_engine_stats() // this shows graph.
+                im_separator()
+
+                // change rows
+                var i = string_to_int(im_input_text("Rows", "{board.rowsize}"))
+                if i != board.rowsize:
+                    board = initializeBoard(i, board.colsize)
+                // change columns
+                var j = string_to_int(im_input_text("Columns", "{board.colsize}"))
+                if j != board.colsize:
+                    board = initializeBoard(board.rowsize, j)
+                
+                // empty board
+                if im_button("Clear board"):
+                    board = initializeBoard(board.rowsize, board.colsize, true)
+
+                im_same_line()
+                // randomize
+                if im_button("Randomize"):
+                    seed++
+                    rnd_seed(seed)
+                    board = initializeBoard(board.rowsize, board.colsize)
+
+                im_same_line()
+                // debug mode
+                if im_checkbox("Debug", DEBUG):
+                    DEBUG = true
+                else:
+                    DEBUG = false
+
+
+// constants
+
 var time_since = 0.
 let board = initializeBoard(N, M, EMPTY)
 let gameState = GameState { board }
-
 let bg_color = if DEBUG: color_red else: color_black
-// drawing loop
+
+let uier = ui {}
+uier.init()
+
 while gl_frame():
     if gl_button("escape") or gl_button("q"): return
-    gl_clear(bg_color)
+    if DEBUG: gl_clear(color_red) else: gl_clear(bg_color)
     gl_color(color_white)
 
     // draw the board
     gameState.board.drawBoard()
+
+    // draw the UI
+    uier.resume(gameState)
 
     // user ticks time
     if gl_button("right") == 1:
@@ -134,7 +184,6 @@ while gl_frame():
 
     // handle user changing cells
     if gl_button("mouse1") == 1:
-        let mpos = gl_mouse_pos(0) 
-        let norm_pos = xy_f { mpos.x, mpos.y } / (float(gl_window_size()) / xy_f { board.rowsize, board.colsize })
-        if DEBUG: print("Mouse clicked at {mpos}, cell {norm_pos}")
+        let norm_pos = (float(gl_mouse_pos(0)) / float(gl_window_size())) * xy_f { gameState.board.colsize, gameState.board.rowsize }
         gameState.changeCell(int(norm_pos.y), int(norm_pos.x))
+
