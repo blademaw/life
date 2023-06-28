@@ -12,6 +12,19 @@ you can simply run
 lobster life.lobster
 ```
 
+## Controls
+
+* `q` or `ESC` quits the game
+* `SPACE` resumes simulation
+* The dropdown `ctl` menu can be used to do the following:
+  * Change board size (rows & columns)
+  * Update frame speed (number of seconds per frame)
+  * Clear the board
+  * Randomize the board (also changes random seed)
+  * Enable debugging mode (shows grid, prints info)
+
+---
+
 **NOTE**: currently a WIP, and low priority.
 
 ## List of known issues & wishlist
