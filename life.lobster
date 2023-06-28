@@ -19,31 +19,6 @@ struct Board:
     rowsize:int
     colsize:int
 
-    // count the number of alive adjacent neighbors to a cell's position
-    // def countNeighbors(row: int, col: int, torus: bool = true) -> int:
-    //     let rowmin = clamp(row - 1, 0, rowsize - 1)
-    //     let rowmax = clamp(row + 1, 0, rowsize - 1)
-    //     let colmin = clamp(col - 1, 0, colsize - 1)
-    //     let colmax = clamp(col + 1, 0, colsize - 1)
-    //     var aliveCount = 0
-    //
-    //     if torus:
-    //         if row - 1 == -1
-    //             var topleft  = xy_i { col - 1, rowsize - 1 }
-    //             var topright = xy_i { col + 1, rowsize - 1 }
-    //             if col - 1 == -1: topleft = xy_i { topleft.x, colsize - 1 }
-    //             elif col + 1 == colsize:
-    //                 if cells[rowsize - 1][0].status == alive: aliveCount++
-    //             // otherwise add the two corners
-    //             else:
-    //                 if cells[rowsize - 1][col - 1] == alive: aliveCount++
-    //     for_range_incl(rowmin, rowmax) i:
-    //         for_range_incl(colmin, colmax) j:
-    //             if not equal([row,col],[i,j]):
-    //                 if (cells[i][j].status == alive): aliveCount++
-    //
-    //     return aliveCount
-
     // count the number of alive adjacent neighbors for a cell
     def countNeighbors(row: int, col: int) -> int:
         var aliveCount = 0
