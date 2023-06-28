@@ -20,19 +20,47 @@ struct Board:
     colsize:int
 
     // count the number of alive adjacent neighbors to a cell's position
-    def countNeighbors(row: int, col: int) -> int:
-        let rowmin = clamp(row - 1, 0, rowsize - 1)
-        let rowmax = clamp(row + 1, 0, rowsize - 1)
-        let colmin = clamp(col - 1, 0, colsize - 1)
-        let colmax = clamp(col + 1, 0, colsize - 1)
-        var aliveCount = 0
+    // def countNeighbors(row: int, col: int, torus: bool = true) -> int:
+    //     let rowmin = clamp(row - 1, 0, rowsize - 1)
+    //     let rowmax = clamp(row + 1, 0, rowsize - 1)
+    //     let colmin = clamp(col - 1, 0, colsize - 1)
+    //     let colmax = clamp(col + 1, 0, colsize - 1)
+    //     var aliveCount = 0
+    //
+    //     if torus:
+    //         if row - 1 == -1
+    //             var topleft  = xy_i { col - 1, rowsize - 1 }
+    //             var topright = xy_i { col + 1, rowsize - 1 }
+    //             if col - 1 == -1: topleft = xy_i { topleft.x, colsize - 1 }
+    //             elif col + 1 == colsize:
+    //                 if cells[rowsize - 1][0].status == alive: aliveCount++
+    //             // otherwise add the two corners
+    //             else:
+    //                 if cells[rowsize - 1][col - 1] == alive: aliveCount++
+    //     for_range_incl(rowmin, rowmax) i:
+    //         for_range_incl(colmin, colmax) j:
+    //             if not equal([row,col],[i,j]):
+    //                 if (cells[i][j].status == alive): aliveCount++
+    //
+    //     return aliveCount
 
-        for_range_incl(rowmin, rowmax) i:
-            for_range_incl(colmin, colmax) j:
-                if not equal([row,col],[i,j]):
-                    if (cells[i][j].status == alive): aliveCount++
+    // count the number of alive adjacent neighbors for a cell
+    def countNeighbors(row: int, col: int) -> int:
+        var aliveCount = 0
+        let dirs = [[-1, -1], [-1, 0], [-1, 1],
+                    [0, -1], [0, 1],
+                    [1, -1], [1, 0], [1, 1]]
+
+        for(dirs) dir:
+            var r, c = row + dir[0], col + dir[1]
+
+            r = (r + rowsize) % rowsize
+            c = (c + colsize) % colsize
+
+            if cells[r][c].status == alive: aliveCount++
 
         return aliveCount
+
 
     // draw the board with GL
     def drawBoard():
@@ -103,6 +131,7 @@ var DEBUG = false // FIXME: refactor to be lowercase
 let EMPTY = false
 let N = 50
 let M = 50
+var update_speed = 0.1
     
 // initialize a random board
 def initializeBoard(rows: int, cols: int, empty: bool = false) -> Board:
@@ -123,7 +152,10 @@ class ui:
     def resume(gameState :: GameState):
         im_frame():
             im_window("ctl", im_window_always_autoresize):
-                im_show_engine_stats() // this shows graph.
+                im_show_engine_stats()
+                
+                // option to change update speed
+                update_speed = im_sliderfloat("Update speed", update_speed, 0.01, 1.)
                 im_separator()
 
                 // change rows
@@ -155,10 +187,12 @@ class ui:
 
 
 // init params for instance
+// FIXME: variable names are inconsistent
 var time_since = 0.
-let board = initializeBoard(N, M, EMPTY)
-let gameState = GameState { board }
-let bg_color = if DEBUG: color_red else: color_black
+let board      = initializeBoard(N, M, EMPTY)
+let gameState  = GameState { board }
+let bg_color   = if DEBUG: color_red else: color_black
+var playGame   = false
 
 // starting UI
 let uier = ui {}
@@ -189,4 +223,14 @@ while gl_frame():
     if gl_button("mouse1") == 1:
         let norm_pos = (float(gl_mouse_pos(0)) / float(gl_window_size())) * xy_f { gameState.board.colsize, gameState.board.rowsize }
         gameState.changeCell(int(norm_pos.y), int(norm_pos.x))
+
+    // allow for space to "play" the animation
+    if gl_button("space") == 1: 
+        playGame = not playGame
+
+    // animation loop, if enabled
+    if playGame: 
+        if (gl_time() - time_since) > update_speed: 
+            gameState.tick(DEBUG)
+            time_since = gl_time()
 
